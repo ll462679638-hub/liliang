@@ -47,8 +47,15 @@ function renderCourts() {
 }
 
 function isBusy(time) {
+  const court = courts.find(c => c.id === state.court);
+  const selectedDate = dates[state.dateIndex];
+  const hasBooking = court && getBookings().some(item =>
+    item.court === court.name &&
+    item.time === time &&
+    new Date(item.date).toDateString() === selectedDate.toDateString()
+  );
   const seed = state.dateIndex * 3 + (state.court ? courts.findIndex(c => c.id === state.court) : 0);
-  return (parseInt(time, 10) + seed) % 5 === 0 || (time === '20:00' && state.dateIndex % 2 === 0);
+  return hasBooking || (parseInt(time, 10) + seed) % 5 === 0 || (time === '20:00' && state.dateIndex % 2 === 0);
 }
 
 function renderTimes() {
@@ -166,6 +173,9 @@ document.querySelector('#confirmButton').addEventListener('click', () => {
   saveBookings([booking, ...getBookings()]);
   document.querySelector('#modalDetail').innerHTML = `${date.getMonth()+1}月${date.getDate()}日 ${state.time}<br>${court.name} · 1 小时`;
   modal.classList.add('open'); modal.setAttribute('aria-hidden', 'false');
+  state.time = null;
+  renderTimes();
+  updateSummary();
   renderBookings();
 });
 
@@ -191,7 +201,7 @@ function renderBookings() {
 document.querySelector('#bookingList').addEventListener('click', e => {
   const button = e.target.closest('[data-cancel]'); if (!button) return;
   saveBookings(getBookings().filter(item => item.id !== Number(button.dataset.cancel)));
-  renderBookings(); showToast('预约已取消');
+  renderBookings(); renderTimes(); updateSummary(); showToast('预约已取消');
 });
 
 let toastTimer;
