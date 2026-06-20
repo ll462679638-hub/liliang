@@ -3,6 +3,7 @@ const courts = [
   { id: 'pickleball-1', name: '匹克球 1 号场', meta: '室外 · 硬地 · 标准匹克球场', type: 'pickleball' },
   { id: 'pickleball-2', name: '匹克球 2 号场', meta: '室外 · 硬地 · 标准匹克球场', type: 'pickleball' }
 ];
+const sharePageUrl = 'https://ll462679638-hub.github.io/liliang/share.html';
 
 const slots = {
   morning: ['07:00', '08:00', '09:00', '10:00', '11:00', '12:00'],
@@ -15,14 +16,17 @@ const dateStrip = document.querySelector('#dateStrip');
 const courtGrid = document.querySelector('#courtGrid');
 const timeGrid = document.querySelector('#timeGrid');
 const modal = document.querySelector('#modal');
-const today = new Date();
-today.setHours(0, 0, 0, 0);
+let dates = [];
 
-const dates = Array.from({ length: 7 }, (_, i) => {
-  const date = new Date(today);
-  date.setDate(today.getDate() + i);
-  return date;
-});
+function buildDates() {
+  const current = new Date();
+  current.setHours(0, 0, 0, 0);
+  dates = Array.from({ length: 7 }, (_, i) => {
+    const date = new Date(current);
+    date.setDate(current.getDate() + i);
+    return date;
+  });
+}
 
 function dateLabel(date, index) {
   if (index === 0) return '今天';
@@ -54,8 +58,7 @@ function isBusy(time) {
     item.time === time &&
     new Date(item.date).toDateString() === selectedDate.toDateString()
   );
-  const seed = state.dateIndex * 3 + (state.court ? courts.findIndex(c => c.id === state.court) : 0);
-  return hasBooking || (parseInt(time, 10) + seed) % 5 === 0 || (time === '20:00' && state.dateIndex % 2 === 0);
+  return Boolean(hasBooking);
 }
 
 function renderTimes() {
@@ -150,15 +153,11 @@ document.querySelector('#nativeInstall').addEventListener('click', async () => {
 });
 
 document.querySelector('#shareLink').addEventListener('click', async () => {
-  if (location.protocol === 'file:') {
-    showToast('发布到网站后即可分享手机链接');
-    return;
-  }
-  const shareData = { title: 'ACE 球场预约', text: '打开 ACE 预约网球或匹克球场', url: location.href };
+  const shareData = { title: '晴朗谷网球场预约', text: '打开晴朗谷网球场预约入口', url: sharePageUrl };
   if (navigator.share) await navigator.share(shareData).catch(() => {});
   else {
-    await navigator.clipboard.writeText(location.href);
-    showToast('预约链接已复制');
+    await navigator.clipboard.writeText(sharePageUrl);
+    showToast('微信入口链接已复制');
   }
 });
 
@@ -210,7 +209,30 @@ function showToast(message) {
   clearTimeout(toastTimer); toastTimer = setTimeout(() => toast.classList.remove('show'), 2200);
 }
 
-renderDates(); renderCourts(); renderTimes(); renderBookings(); updateSummary();
+function syncDatesIfNeeded() {
+  const previousFirstDate = dates[0] && dates[0].toDateString();
+  buildDates();
+  const currentFirstDate = dates[0].toDateString();
+  if (previousFirstDate !== currentFirstDate) {
+    state.dateIndex = 0;
+    state.time = null;
+  }
+  renderDates();
+  renderTimes();
+  updateSummary();
+}
+
+buildDates();
+renderDates();
+renderCourts();
+renderTimes();
+renderBookings();
+updateSummary();
+
+setInterval(syncDatesIfNeeded, 60 * 1000);
+document.addEventListener('visibilitychange', () => {
+  if (!document.hidden) syncDatesIfNeeded();
+});
 
 if ('serviceWorker' in navigator && location.protocol !== 'file:') {
   navigator.serviceWorker.register('./sw.js').catch(() => {});

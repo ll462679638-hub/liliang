@@ -6,8 +6,8 @@
   <meta name="theme-color" content="#133b2f" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-  <meta name="apple-mobile-web-app-title" content="ACE 约球" />
-  <title>ACE 网球场预约</title>
+  <meta name="apple-mobile-web-app-title" content="晴朗谷预约" />
+  <title>晴朗谷网球场预约</title>
   <link rel="manifest" href="manifest.webmanifest" />
   <link rel="icon" href="app-icon.svg" type="image/svg+xml" />
   <link rel="apple-touch-icon" href="apple-touch-icon.png" />
@@ -20,10 +20,10 @@
   <main class="app-shell">
     <section class="hero">
       <nav>
-        <a class="brand" href="#" aria-label="ACE 首页"><span class="brand-mark">A</span><span>ACE COURT</span></a>
+        <a class="brand" href="#" aria-label="晴朗谷首页"><span class="brand-mark">晴</span><span>晴朗谷</span></a>
         <div class="nav-actions">
           <button class="install-link" id="installButton">添加到手机</button>
-          <button class="profile-button" id="profileButton" aria-label="查看我的预约"><span>林</span></button>
+          <button class="profile-button" id="profileButton" aria-label="查看我的预约"><span>姚</span></button>
         </div>
       </nav>
 
@@ -96,7 +96,7 @@
     <div class="modal-card install-card" role="dialog" aria-modal="true" aria-labelledby="installTitle">
       <button class="modal-close" id="installClose" aria-label="关闭安装说明">×</button>
       <div class="app-icon-preview">A</div>
-      <p class="step-label">INSTALL ACE COURT</p>
+      <p class="step-label">INSTALL SUNNY VALLEY</p>
       <h2 id="installTitle">添加到手机桌面</h2>
       <div class="install-tabs" role="tablist">
         <button class="active" data-install-tab="iphone">苹果手机</button>
@@ -109,6 +109,7 @@
         <ol><li>用 Chrome 打开预约链接</li><li>点击右上角菜单</li><li>选择“安装应用”或“添加到主屏幕”</li></ol>
       </div>
       <button class="primary-button install-action" id="nativeInstall">安装到桌面</button>
+      <a class="copy-link-button" id="wechatEntry" href="./share.html" target="_blank" rel="noopener">微信入口页</a>
       <button class="copy-link-button" id="shareLink">分享预约链接</button>
       <p class="secure-note">发布为 HTTPS 链接后，即可像 App 一样使用</p>
     </div>
